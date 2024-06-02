@@ -1,11 +1,11 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone"
+import { createServer } from 'node:http'
+import { createYoga, createSchema } from 'graphql-yoga'
 
 // db
-import db from "./db.js"
+import db from "./db"
 
 // types
-import { typeDefs } from "./schema.js";
+import { typeDefs } from "./schema";
 
 
 const resolvers = {
@@ -72,18 +72,18 @@ const resolvers = {
     }
   }
 }
-
-// server setup
-const server = new ApolloServer({
-  // typeDefs -- definitions of types of data
+const schema = createSchema({
   typeDefs,
-  // resolvers
-  resolvers,
-  // context
-});
-
-const { url } = await startStandaloneServer(server, {
-  listen: {port: 4000},
-});
-
-console.log('Server readt at port', url)
+  resolvers
+})
+ 
+// Create a Yoga instance with a GraphQL schema.
+const yoga = createYoga({ schema })
+ 
+// Pass it into a server to hook into request handlers.
+const server = createServer(yoga)
+ 
+// Start the server and you're done!
+server.listen(4000, () => {
+  console.info('Server is running on http://localhost:4000/graphql')
+})
