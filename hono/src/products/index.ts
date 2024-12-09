@@ -1,7 +1,6 @@
 import { Hono } from "hono"
 import db from "../db"
 import { productsTable } from "../db/schema"
-
 const app = new Hono()
 
 app.get('/', (c) => {
