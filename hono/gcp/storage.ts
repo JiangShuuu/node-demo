@@ -34,3 +34,13 @@ export async function uploadGoogleFile(base64Data: string, destFileName: string,
   await file.makePublic();
   return url;
 }
+
+export async function deleteGoogleFile(destFileName: string) {
+  try {
+    await googleStorage.bucket(process.env.GOOGLE_STORAGE_BUCKET_NAME || '').file(destFileName).delete();
+  } catch (error) {
+    console.error('Error delete file:', error);
+    return false;
+  }
+  return true;
+}
