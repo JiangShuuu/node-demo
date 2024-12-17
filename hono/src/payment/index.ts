@@ -22,7 +22,7 @@ const options = {
   IsProjectContractor: false,
 };
 
-
+// SDK
 app.post('/create', async (c) => {
   // const body = await c.req.parseBody()
   // const { orderId, amount, name } = body
@@ -38,13 +38,13 @@ app.post('/create', async (c) => {
     timeZone: 'UTC',
   });
   let base_param = {
-    MerchantTradeNo: 'test' + new Date().getTime(), //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
+    MerchantTradeNo: 'test' + new Date().getTime(), // 請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
     MerchantTradeDate,
     TotalAmount: '100',
     TradeDesc: '測試交易描述',
     ItemName: '測試商品等',
-    ReturnURL: `http://localhost:3000/api/payment/capture`,
-    ClientBackURL: `http://localhost:8080/callback`,
+    ReturnURL: process.env.PAYMENT_RETURN_URL,
+    ClientBackURL: process.env.PAYMENT_CALLBACK_URL,
   };
   const create = new ecpay_payment(options);
 
@@ -58,9 +58,29 @@ app.post('/capture', async (c) => {
   const body = await c.req.parseBody()
 
   console.log('payment capture', body)
+  // {
+  //   CustomField1: "",
+  //   CustomField2: "",
+  //   CustomField3: "",
+  //   CustomField4: "",
+  //   MerchantID: "3002607",
+  //   MerchantTradeNo: "test1734430936645",
+  //   PaymentDate: "2024/12/17 18:22:54",
+  //   PaymentType: "Credit_CreditCard",
+  //   PaymentTypeChargeFee: "2",
+  //   RtnCode: "1",
+  //   RtnMsg: "交易成功",
+  //   SimulatePaid: "0",
+  //   StoreID: "",
+  //   TradeAmt: "100",
+  //   TradeDate: "2024/12/17 18:22:16",
+  //   TradeNo: "2412171822169397",
+  //   CheckMacValue: "447090F34BFFD306CE78C3CF5C52725A8AEC851EB37629B2F2D10423E38BAD26",
+  // }
   return c.json({ ok: true })
 })
 
+// 手動建立測試訂單驗證
 app.post('/notify', async (c) => {
   const payload = {
     TradeDesc: '促銷方案',
