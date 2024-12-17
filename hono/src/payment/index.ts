@@ -1,51 +1,57 @@
 import { Hono } from "hono"
 import { decodeAES, encodeAES, generateCheckMacValue } from "./utils"
+const ecpay_payment = require('ecpay_aio_nodejs');
 
 const app = new Hono()
 
+const options = {
+  OperationMode: 'Test', //Test or Production
+  MercProfile: {
+    MerchantID: process.env.MERCHANTID,
+    HashKey: process.env.HASH_KEY,
+    HashIV: process.env.HASH_IV,
+  },
+  IgnorePayment: [
+    //    "Credit",
+    //    "WebATM",
+    //    "ATM",
+    //    "CVS",
+    //    "BARCODE",
+    //    "AndroidPay"
+  ],
+  IsProjectContractor: false,
+};
+
+
 app.post('/create', async (c) => {
-  const body = await c.req.parseBody()
-  const { orderId, amount, name } = body
+  // const body = await c.req.parseBody()
+  // const { orderId, amount, name } = body
 
-  const payload = {
-    MerchantTradeNo: orderId,
-    MerchantTradeDate: new Date().toISOString(),
-    PaymentType: 'aio',
-    TotalAmount: amount,
-    TradeDesc: 'test',
-    ItemName: name,
-    ReturnURL: `${process.env.BASE_URL}/api/payment/capture`,
-    ChoosePayment: 'Credit',
-    CheckMacValue: '',
-    EncryptType: 1,
-  }
+  const MerchantTradeDate = new Date().toLocaleString('zh-TW', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'UTC',
+  });
+  let base_param = {
+    MerchantTradeNo: 'test' + new Date().getTime(), //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
+    MerchantTradeDate,
+    TotalAmount: '100',
+    TradeDesc: '測試交易描述',
+    ItemName: '測試商品等',
+    ReturnURL: `http://localhost:3000/api/payment/capture`,
+    ClientBackURL: `http://localhost:8080/callback`,
+  };
+  const create = new ecpay_payment(options);
 
-  const encodeData = encodeAES(payload)
+  // 注意：在此事直接提供 html + js 直接觸發的範例，直接從前端觸發付款行為
+  const html = create.payment_client.aio_check_out_all(base_param);
 
-  try {
-    const response = await fetch(process.env.ECPAY_CREATE_BY_TEMP_TRADE || '', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: {
-        MerchantID: process.env.MERCHANTID || '',
-        RqHeader: {
-          Timestamp: Math.floor(new Date().getTime() / 1000.0)
-        },
-        Data: encodeData
-      }
-    })
-
-    const data = await response.json()
-    console.log('payment data', data)
-
-    // const resultData = decodeAES(response.data)
-    return c.json({ ok: true })
-  } catch (error: any) {
-    console.error('payment error', error)
-    return c.json({ ok: false, error: error.message }, 422)
-  }
+  return c.html(html)
 })
 
 app.post('/capture', async (c) => {
