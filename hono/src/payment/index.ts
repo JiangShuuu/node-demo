@@ -54,6 +54,22 @@ app.post('/create', async (c) => {
   return c.html(html)
 })
 
+app.post('/refund', async (c) => {
+  // const body = await c.req.parseBody()
+  // console.log('payment refund', body)
+  const refund = new ecpay_payment(options);
+
+  const payload = {
+    MerchantTradeNo: "test1734430936645",
+    TradeNo: "2412171822169397",
+    Action: "R",
+    TotalAmount: "100"
+  }
+  const res = refund.payment_client.credit_do_act(payload)
+
+  return c.json({ ok: true, data: res })
+})
+
 app.post('/capture', async (c) => {
   const body = await c.req.parseBody()
 
