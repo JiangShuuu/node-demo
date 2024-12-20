@@ -1,4 +1,5 @@
 import CryptoES from 'crypto-es'
+const crypto = require('crypto');
 
 const {
   NEWEBPAYHASHKEY,
@@ -13,7 +14,12 @@ export function createAesEncrypt(TradeInfo: any) {
   const keyBytes = CryptoES.enc.Utf8.parse(NEWEBPAYHASHKEY);
   const ivBytes = CryptoES.enc.Utf8.parse(NEWEBPAYHASHIV);
 
-  const cipher = CryptoES.AES.encrypt(genDataChain(TradeInfo), keyBytes, {
+  // 加密
+  const urlEncodedString = new URLSearchParams(TradeInfo).toString();
+
+  console.log('urlEncodedString', urlEncodedString)
+
+  const cipher = CryptoES.AES.encrypt(urlEncodedString, keyBytes, {
     iv: ivBytes,
     mode: CryptoES.mode.CBC,
     padding: CryptoES.pad.Pkcs7
@@ -44,4 +50,23 @@ export function createShaEncrypt(aesEncrypt: string) {
   
   // 轉換為大寫的十六進制字串
   return hash.toString(CryptoES.enc.Hex).toUpperCase();
+}
+
+// old Aes
+export function createOldAesEncrypt(TradeInfo: any) {
+  const encrypt = crypto.createCipheriv('aes-256-cbc', NEWEBPAYHASHKEY, NEWEBPAYHASHIV);
+  // 加密
+  const jsonString = JSON.stringify(TradeInfo)
+  // UrlEncode
+  const encodedString = encodeURIComponent(jsonString)
+  const enc = encrypt.update(encodedString, 'utf8', 'hex');
+  return enc + encrypt.final('hex');
+}
+
+// old sha
+export function createOldShaEncrypt(aesEncrypt: string) {
+  const sha = crypto.createHash('sha256');
+  const plainText = `HashKey=${NEWEBPAYHASHKEY}&${aesEncrypt}&HashIV=${NEWEBPAYHASHIV}`;
+
+  return sha.update(plainText).digest('hex').toUpperCase();
 }

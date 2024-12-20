@@ -25,7 +25,7 @@ app.post('/create', async (c) => {
 
   const initialPayload = {
     MerchantID: NEWEBPAYMERCHANTID,
-    RespondType: 'String',
+    RespondType: 'JSON',
     TimeStamp: Math.round(new Date().getTime() / 1000),
     Version: NEWEBPAYVersion,
     LangType: 'zh-tw',
@@ -51,15 +51,25 @@ app.post('/create', async (c) => {
     EncryptType: '1',
   }
 
-  const data = await fetch(`${process.env.NEWEBPAYPayGateWay}`, {
-    method: 'POST',
-    body: JSON.stringify(finalPayload),
-  });
+  console.log(finalPayload)
 
+  const formData = new FormData();
+  formData.append('MerchantID', finalPayload.MerchantID || '');
+  formData.append('TradeInfo', finalPayload.TradeInfo || '');
+  formData.append('TradeSha', finalPayload.TradeSha || '');
+  formData.append('Version', finalPayload.Version || '');
+  formData.append('EncryptType', finalPayload.EncryptType || '');
 
-  const response = await data.text();
+  return c.text(formData.toString())
 
-  return c.text(response)
+  // const response = await fetch(NEWEBPAYPayGateWay || '', {
+  //   method: 'POST',
+  //   body: formData
+  // });
+
+  // // 獲取藍新金流的回應
+  // const result = await response.text();
+  // return c.text(result);
 })
 
 export default app
