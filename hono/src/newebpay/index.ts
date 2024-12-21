@@ -28,14 +28,13 @@ app.post('/create', async (c) => {
   const initialPayload = {
     MerchantID: NEWEBPAYMERCHANTID,
     RespondType: 'JSON',
-    TimeStamp: Math.round(new Date().getTime() / 1000),
+    TimeStamp: Math.round(new Date().getTime() / 1000).toString(),
     Version: NEWEBPAYVersion,
     LangType: 'zh-tw',
-    MerchantOrderNo: Math.round(new Date().getTime() / 1000),
-    Amt: 10000,
+    MerchantOrderNo: Math.round(new Date().getTime() / 1000).toString(),
+    Amt: '10000',
     ItemDesc: 'TestProduct',
     CREDIT: '1',
-    LINEPAY: '1',
     APPLEPAY: '1',
     ReturnURL: NEWEBPAYReturnUrl,
     NotifyURL: NEWEBPAYNotifyUrl,
@@ -45,20 +44,21 @@ app.post('/create', async (c) => {
   const aesEncrypt = createAesEncrypt(initialPayload, key, iv);
   const shaEncrypt = createOldShaEncrypt(aesEncrypt!, key, iv);
 
-  const finalPayload = {
-    MerchantID: NEWEBPAYMERCHANTID,
-    TradeInfo: aesEncrypt,
-    TradeSha: shaEncrypt,
-    Version: NEWEBPAYVersion,
-    EncryptType: '1',
-  }
-
   const formData = new FormData();
-  formData.append('MerchantID', finalPayload.MerchantID || '');
-  formData.append('TradeInfo', finalPayload.TradeInfo || '');
-  formData.append('TradeSha', finalPayload.TradeSha || '');
-  formData.append('Version', finalPayload.Version || '');
-  formData.append('EncryptType', finalPayload.EncryptType || '');
+  formData.append('MerchantID', initialPayload.MerchantID || '');
+  formData.append('TradeInfo', aesEncrypt || '');
+  formData.append('TradeSha', shaEncrypt || '');
+  formData.append('TimeStamp', initialPayload.TimeStamp || '');
+  formData.append('Version', initialPayload.Version || '');
+  formData.append('LangType', initialPayload.LangType || '');
+  formData.append('MerchantOrderNo', initialPayload.MerchantOrderNo || '');
+  formData.append('Amt', initialPayload.Amt || '');
+  formData.append('ItemDesc', initialPayload.ItemDesc || '');
+  formData.append('CREDIT', initialPayload.CREDIT || '');
+  formData.append('APPLEPAY', initialPayload.APPLEPAY || '');
+  formData.append('ReturnURL', initialPayload.ReturnURL || '');
+  formData.append('NotifyURL', initialPayload.NotifyURL || '');
+  formData.append('Email', initialPayload.Email || '');
 
   const response = await fetch(NEWEBPAYPayGateWay || '', {
     method: 'POST',
@@ -66,8 +66,10 @@ app.post('/create', async (c) => {
   });
 
   // 獲取藍新金流的回應
+
+  console.log(response);
   const result = await response.text();
-  return c.text(result);
+  return c.html(result)
 })
 
 
@@ -121,6 +123,44 @@ app.post('/php', async (c) => {
     body: formData
   });
 
+  const result = await response.text();
+  return c.text(result);
+})
+
+app.post('/test', async (c) => {
+  const finalPayload = {
+    MerchantID: process.env.NEWEBPAYMERCHANTID || '',
+    TradeInfo: 'af2c3ea002cd02f3109954bd454766bd497493625d8156996887ed4749d4b52e44723d2f047f366afd2873bf279442fca469ca6a69b3bbe51ce0dbfbc54cc5d01e1ff03862b8031752b4df9430a83fc999d0388b061b0378ffe9c0fb1337a03be5e644f63d2b5aabd8fbeded85044304944868c513d2cbcd7462061b0ece6ce715b1a61279dbcd829b91bd2a9bcc079007e00671c280c9b86cdce4093a5d7f21264a4eab7f15664a44613cd1badf466153ac5e08a48ba42a1da041ae9a83f49b0d4a363b8bb830927abefbb92822a8f180a81a5c359cdab1eb879b4f942b585644cd06a74bbc35427eb979574675bb37942d749d1448189e6f4c0f0833ff316b13fdc9b6e8c11bbf40c9b2aa275f8a3e6b48339309de4d8a622ca9cf76fddfc4469db4bed869815237bf4368781c61480a52f842ad756370c8c7a39e009ac74b',
+    TradeSha: '16EF96A0A8D7E0BCED7089CD6AC2F113F9CF000848F31AEEA7ABC3EF8431AF9A',
+    TimeStamp: '1734752959',
+    Version: '2.2',
+    NotifyUrl: 'https://trans-iot.jiangshuuu.com/api/newebpay/notify',
+    ReturnUrl: 'https://trans-iot.jiangshuuu.com/api/newebpay/return',
+    MerchantOrderNo: '1734752959',
+    Amt: '1000',
+    ItemDesc: '測試商品',
+    Email: 'globelex65@gmail.com',
+  }
+
+  const formData = new FormData();
+  formData.append('MerchantID', finalPayload.MerchantID || '');
+  formData.append('TradeInfo', finalPayload.TradeInfo || '');
+  formData.append('TradeSha', finalPayload.TradeSha || '');
+  formData.append('TimeStamp', finalPayload.TimeStamp || '');
+  formData.append('Version', finalPayload.Version || '');
+  formData.append('NotifyUrl', finalPayload.NotifyUrl || '');
+  formData.append('ReturnUrl', finalPayload.ReturnUrl || '');
+  formData.append('MerchantOrderNo', finalPayload.MerchantOrderNo || '');
+  formData.append('Amt', finalPayload.Amt || '');
+  formData.append('ItemDesc', finalPayload.ItemDesc || '');
+  formData.append('Email', finalPayload.Email || '');
+
+  const response = await fetch(NEWEBPAYPayGateWay || '', {
+    method: 'POST',
+    body: formData
+  });
+
+  // 獲取藍新金流的回應
   const result = await response.text();
   return c.text(result);
 })
