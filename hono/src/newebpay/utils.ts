@@ -1,10 +1,4 @@
 import CryptoES from 'crypto-es'
-const crypto = require('crypto');
-
-const {
-  NEWEBPAYHASHKEY,
-  NEWEBPAYHASHIV,
-} = process.env;
 
 export function createAesEncrypt(TradeInfo: any, key: string, iv: string) {
 
@@ -34,39 +28,4 @@ export function createShaEncrypt(aesEncrypt: string, key: string, iv: string) {
   
   // 轉換為大寫的十六進制字串
   return hash.toString(CryptoES.enc.Hex).toUpperCase();
-}
-
-
-// 字串組合
-function genDataChain(order: any) {
-  return `MerchantID=${order.MerchantID}&TimeStamp=${
-    order.TimeStamp
-  }&Version=${order.Version}&RespondType=${order.RespondType}&MerchantOrderNo=${
-    order.MerchantOrderNo
-  }&Amt=${order.Amt}&NotifyURL=${encodeURIComponent(
-    order.NotifyUrl,
-  )}&ReturnURL=${encodeURIComponent(order.ReturnUrl)}&ItemDesc=${encodeURIComponent(
-    order.ItemDesc,
-  )}&Email=${encodeURIComponent(order.Email)}`;
-}
-
-
-
-// old Aes
-export function createOldAesEncrypt(TradeInfo: any, key: string, iv: string) {
-  const encrypt = crypto.createCipheriv('aes-256-cbc', key, iv);
-  // 加密
-  const jsonString = JSON.stringify(TradeInfo)
-  // UrlEncode
-  const encodedString = encodeURIComponent(jsonString)
-  const enc = encrypt.update(encodedString, 'utf8', 'hex');
-  return enc + encrypt.final('hex');
-}
-
-// old sha
-export function createOldShaEncrypt(aesEncrypt: string, key: string, iv: string) {
-  const sha = crypto.createHash('sha256');
-  const plainText = `HashKey=${key}&${aesEncrypt}&HashIV=${iv}`;
-
-  return sha.update(plainText).digest('hex').toUpperCase();
 }
