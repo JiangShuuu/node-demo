@@ -8,16 +8,24 @@ const {
   NEWEBPAYHASHKEY,
   NEWEBPAYHASHIV,
   NEWEBPAYVersion,
-  NEWEBPAYPayGateWay,
+  NEWEBPAYUrl,
   NEWEBPAYNotifyUrl,
   NEWEBPAYReturnUrl,
 } = process.env;
 
 app.get('/', (c) => {
-  console.log(`NEWEBPAYMERCHANTID: ${NEWEBPAYMERCHANTID}, NEWEBPAYHASHKEY: ${NEWEBPAYHASHKEY}, NEWEBPAYHASHIV: ${NEWEBPAYHASHIV}, NEWEBPAYVersion: ${NEWEBPAYVersion}, NEWEBPAYPayGateWay: ${NEWEBPAYPayGateWay}, NEWEBPAYNotifyUrl: ${NEWEBPAYNotifyUrl}, NEWEBPAYReturnUrl: ${NEWEBPAYReturnUrl}`);
-  return c.text('Hello World')
+  return c.json({
+    NEWEBPAYMERCHANTID,
+    NEWEBPAYHASHKEY,
+    NEWEBPAYHASHIV,
+    NEWEBPAYVersion,
+    NEWEBPAYUrl,
+    NEWEBPAYNotifyUrl,
+    NEWEBPAYReturnUrl,
+  })
 })
 
+// 建立訂單
 app.post('/create', async (c) => {
   const key = NEWEBPAYHASHKEY || '';
   const iv = NEWEBPAYHASHIV || '';
@@ -56,10 +64,11 @@ app.post('/create', async (c) => {
     ReturnURL: initialPayload.ReturnURL,
     NotifyURL: initialPayload.NotifyURL,
     Email: initialPayload.Email,
-    paymentUrl: NEWEBPAYPayGateWay // 加入付款網址
+    paymentUrl: NEWEBPAYUrl + '/MPG/mpg_gateway' // 加入付款網址
   });
 })
 
+// 後端通知付款結果
 app.post('/notify', async (c) => {
   const res = {
     Status: "SUCCESS",
@@ -83,7 +92,55 @@ app.post('/notify', async (c) => {
 
   // 交易完成，將成功資訊儲存於資料庫
  
-  return c.text('付款成功')
+  return c.json({
+    Status: "SUCCESS",
+    TradeInfo: data,
+  })
+})
+
+// 退款
+app.post('/refund', async (c) => {
+  const key = NEWEBPAYHASHKEY || '';
+  const iv = NEWEBPAYHASHIV || '';
+
+  const initialPayload = {
+    MerchantID: NEWEBPAYMERCHANTID,
+    RespondType: 'JSON',
+    Version: '2.2',
+    Amt: '10000',
+    MerchantOrderNo: '1734755807',
+    TimeStamp: Math.round(new Date().getTime() / 1000).toString(),
+    IndexType: '2',
+    TradeNo: '24122112370166550',
+    CloseType: '2',
+  }
+
+  const aesEncrypt = createAesEncrypt(initialPayload, key, iv);
+
+  const formData = new FormData();
+  formData.append('MerchantID_', initialPayload.MerchantID || '');
+  formData.append('PostData_', aesEncrypt || '');
+  formData.append('RespondType', initialPayload.RespondType || '');
+  formData.append('Version', initialPayload.Version || '');
+  formData.append('Amt', initialPayload.Amt || '');
+  formData.append('MerchantOrderNo', initialPayload.MerchantOrderNo || '');
+  formData.append('TimeStamp', initialPayload.TimeStamp || '');
+  formData.append('IndexType', initialPayload.IndexType || '');
+  formData.append('TradeNo', initialPayload.TradeNo || '');
+  formData.append('CloseType', initialPayload.CloseType || '');
+
+  const response = await fetch(NEWEBPAYUrl + '/API/CreditCard/Close', {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  // TRA10035 銀行尚未回應
+  
+  return c.json({
+    data,
+  })
 })
 
 export default app
