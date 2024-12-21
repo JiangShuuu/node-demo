@@ -29,3 +29,37 @@ export function createShaEncrypt(aesEncrypt: string, key: string, iv: string) {
   // 轉換為大寫的十六進制字串
   return hash.toString(CryptoES.enc.Hex).toUpperCase();
 }
+
+export function createAesDecrypt(TradeInfo: string, key: string, iv: string) {
+  try {
+    // 1. 將 hex 字串轉換為 WordArray
+    const ciphertext = CryptoES.enc.Hex.parse(TradeInfo);
+    
+    // 2. 準備 key 和 iv
+    const keyBytes = CryptoES.enc.Utf8.parse(key);
+    const ivBytes = CryptoES.enc.Utf8.parse(iv);
+
+    // 3. 解密
+    const decrypted = CryptoES.AES.decrypt(
+      { ciphertext: ciphertext },
+      keyBytes,
+      {
+        iv: ivBytes,
+        mode: CryptoES.mode.CBC,
+        padding: CryptoES.pad.Pkcs7
+      }
+    );
+
+    // 4. 轉換為 UTF-8 字串
+    const decryptedStr = decrypted.toString(CryptoES.enc.Utf8);
+
+    // 5. 移除填充字符
+    const result = decryptedStr.replace(/[\x00-\x20]+/g, '');
+
+    // 6. 解析 JSON
+    return JSON.parse(result);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    throw new Error('Failed to decrypt TradeInfo');
+  }
+}
