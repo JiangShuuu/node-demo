@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^7.14.0",
+    "axios": "^1.7.9",
     "crypto-es": "^2.1.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
+    "ecpay_aio_nodejs": "^1.2.2",
     "file-type": "^19.6.0",
     "hono": "^4.6.9",
     "pg": "^8.13.1"

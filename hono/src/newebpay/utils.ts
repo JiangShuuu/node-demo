@@ -53,8 +53,8 @@ function genDataChain(order: any) {
 
 
 // old Aes
-export function createOldAesEncrypt(TradeInfo: any) {
-  const encrypt = crypto.createCipheriv('aes-256-cbc', NEWEBPAYHASHKEY, NEWEBPAYHASHIV);
+export function createOldAesEncrypt(TradeInfo: any, key: string, iv: string) {
+  const encrypt = crypto.createCipheriv('aes-256-cbc', key, iv);
   // 加密
   const jsonString = JSON.stringify(TradeInfo)
   // UrlEncode
@@ -64,9 +64,9 @@ export function createOldAesEncrypt(TradeInfo: any) {
 }
 
 // old sha
-export function createOldShaEncrypt(aesEncrypt: string) {
+export function createOldShaEncrypt(aesEncrypt: string, key: string, iv: string) {
   const sha = crypto.createHash('sha256');
-  const plainText = `HashKey=${NEWEBPAYHASHKEY}&${aesEncrypt}&HashIV=${NEWEBPAYHASHIV}`;
+  const plainText = `HashKey=${key}&${aesEncrypt}&HashIV=${iv}`;
 
   return sha.update(plainText).digest('hex').toUpperCase();
 }
