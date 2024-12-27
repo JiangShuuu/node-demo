@@ -1,4 +1,4 @@
-name = "cfw"
+name = "hono-cloudflare-workers-example"
 main = "src/index.ts"
 compatibility_date = "2024-12-27"
 
