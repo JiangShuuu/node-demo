@@ -15,10 +15,11 @@ compatibility_date = "2024-12-27"
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[[d1_databases]]
+binding = "DB"
+database_name = "hono-drizzle-d1-example"
+database_id = "fed1c863-f0f3-4bfa-9705-4a16b929c8ef"
+migrations_dir = "prisma/migrations"
 
 # [ai]
 # binding = "AI"
