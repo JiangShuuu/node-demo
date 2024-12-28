@@ -1,6 +1,7 @@
 import App from "./app";
 import PostController from "./controllers/posts";
 import UserController from "./controllers/users";
+import uploadR2Controller from "./controllers/upload-r2";
 
 // import { jwt } from "hono/jwt";
 
@@ -21,4 +22,6 @@ const app = App;
 
 app.route("/", PostController);
 app.route("/", UserController);
+app.route("/", uploadR2Controller);
+
 export default app;
