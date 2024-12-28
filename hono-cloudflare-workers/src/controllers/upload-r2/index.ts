@@ -1,6 +1,6 @@
 import App from "../../app";
 import { Context } from "hono";
-import { s3 } from "./utile";
+import { s3Client } from "./utile";
 import {
   PutObjectCommand,
   DeleteObjectCommand,
@@ -19,8 +19,9 @@ const createUploadFile = async (c: Context) => {
   };
 
   const command = new PutObjectCommand(params);
+  
   try {
-    const response = await s3.send(command);
+    const response = await s3Client(c.env).send(command);
     console.log("response", response);
   } catch (error) {
     console.log("error", error);
