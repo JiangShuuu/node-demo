@@ -18,12 +18,17 @@ model User {
   id Int @default(autoincrement())
   email String @unique
   name String @map("firstName") // 用於改變欄位名稱
-  role String? // 可為 null
+  role Role? @default(USER) // 可為 null
 
-  @@map("users")
+  @@map("users") // 用於改變表名稱，但代碼中仍使用 User 這個 model 名稱
 
   // 以下用於建立複合主鍵、複合唯一鍵、複合索引
   @@id([email, name]) // 複合主鍵，取代 id 欄位，當作該表的唯一識別碼
   @@unique([name, role]) // 複合唯一鍵，用於確保 name 和 role 的組合是唯一的，不能有相同的組合
   @@index([id, email]) // 複合索引，用於加速查詢，可以加速查詢，但會增加寫入的負擔
+}
+
+enum Role {
+  ADMIN
+  USER
 }
