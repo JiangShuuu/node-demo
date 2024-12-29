@@ -15,7 +15,6 @@ datasource db {
 
 model User {
   id Int @id @default(autoincrement())
-  // id Int @default(autoincrement())
   email String @unique
   name String @map("firstName") // 用於改變欄位名稱
   role Role? @default(USER) // 可為 null
@@ -23,7 +22,7 @@ model User {
   profile Profile? // one-to-one
   posts Post[] // one-to-many
 
-  @@map("users") // 用於改變表名稱，但代碼中仍使用 User 這個 model 名稱
+  @@map("Users") // 用於改變表名稱，但代碼中仍使用 User 這個 model 名稱
 
   // 以下用於建立複合主鍵、複合唯一鍵、複合索引
   // @@id([email, name]) // 複合主鍵，取代 id 欄位，當作該表的唯一識別碼
@@ -39,6 +38,31 @@ model Post {
   updatedAt DateTime @updatedAt
   published Boolean @default(false)
   author User @relation(fields: [authorId], references: [id])
+  categories Category[]
+  tags PostTag[]
+}
+
+// Implicit relation for many-to-many
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  posts Post[]
+}
+
+// Explicit relation for many-to-many
+model PostTag {
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  tag       Tag      @relation(fields: [tagId], references: [id])
+  tagId     Int
+  createdAt DateTime @default(now())  // 可以記錄標籤被添加的時間
+  
+  @@id([postId, tagId]) // 將 postId 和 tagId 設為複合主鍵
+}
+model Tag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  posts PostTag[] // 改為使用中間表
 }
 
 enum Role {
