@@ -28,6 +28,46 @@ const getPosts = async (c: Context) => {
   return c.json(posts)
 }
 
+// is，isNot 適用於 one-to-one or many-to-one 的關係
+const getPostsIs = async (c: Context) => {
+  const posts = await prisma.post.findMany({
+    where: {
+      author: {
+        is: {
+          name: 'John'
+        }
+      }
+    }
+  })
+
+  return c.json(posts)
+}
+
+const getPostsIsNot = async (c: Context) => {
+  const posts = await prisma.post.findMany({
+    where: {
+      author: {
+        isNot: {
+          name: 'John'
+        },
+        is: {
+          email: {
+            startsWith: 's'
+          }
+        }
+      }
+    },
+    // 包含 author 的資料
+    include: {
+      author: true
+    }
+  })
+
+  return c.json(posts)
+}
+
 posts.get('/', getPosts)
+posts.get('/is', getPostsIs)
+posts.get('/isNot', getPostsIsNot)
 
 export default posts
