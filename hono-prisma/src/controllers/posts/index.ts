@@ -66,8 +66,35 @@ const getPostsIsNot = async (c: Context) => {
   return c.json(posts)
 }
 
+const getPostsSelect = async (c: Context) => {
+  const posts = await prisma.post.findMany({
+    where: {
+      author: {
+        isNot: {
+          name: 'John'
+        },
+        is: {
+          email: {
+            startsWith: 's'
+          }
+        }
+      }
+    },
+    select: {
+      title: true,
+      author: {
+        select: {
+          name: true
+        }
+      }
+    }
+  })
+
+  return c.json(posts)
+}
+
 posts.get('/', getPosts)
 posts.get('/is', getPostsIs)
 posts.get('/isNot', getPostsIsNot)
-
+posts.get('/select', getPostsSelect)
 export default posts
