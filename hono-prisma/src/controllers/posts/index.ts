@@ -3,6 +3,7 @@ import prisma from "../../lib/prisma";
 import AggregationController from "./aggregation";
 import GroupController from "./group";
 import SortController from "./sort";
+import PaginationController from "./pagination";
 
 const posts = new Hono()
 
@@ -104,4 +105,6 @@ posts.get('/select', getPostsSelect)
 posts.route('/aggregation', AggregationController)
 posts.route('/group', GroupController)
 posts.route('/sort', SortController)
+posts.route('/pagination', PaginationController)
+
 export default posts
