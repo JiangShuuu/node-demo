@@ -1,5 +1,8 @@
 import { Hono, Context } from "hono";
 import prisma from "../../lib/prisma";
+import AggregationController from "./aggregation";
+import GroupController from "./group";
+import SortController from "./sort";
 
 const posts = new Hono()
 
@@ -97,4 +100,8 @@ posts.get('/', getPosts)
 posts.get('/is', getPostsIs)
 posts.get('/isNot', getPostsIsNot)
 posts.get('/select', getPostsSelect)
+
+posts.route('/aggregation', AggregationController)
+posts.route('/group', GroupController)
+posts.route('/sort', SortController)
 export default posts
