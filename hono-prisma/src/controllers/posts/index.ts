@@ -14,7 +14,7 @@ const getPosts = async (c: Context) => {
         {
           title: {
             contains: 'github',
-            mode: 'insensitive' // 不區分大小寫
+            mode: 'insensitive' // 不分大小寫
           }
         },
         {
