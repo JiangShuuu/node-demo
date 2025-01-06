@@ -2,6 +2,13 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const categories = [
+  { name: "Data Base" },
+  { name: "Big Data" },
+  { name: "AI" },
+  { name: "Cloud" }
+];
+
 const generatePostTitle = (index: number) => {
   const topics = ['Prisma', 'GraphQL', 'TypeScript', 'Node.js', 'Database'];
   const actions = ['Introduction to', 'Deep Dive into', 'Tutorial about', 'Guide for', 'Best Practices of'];
@@ -17,12 +24,6 @@ const userData: Prisma.UserCreateInput[] = [
       create: Array.from({ length: 55 }, (_, index) => ({
         title: generatePostTitle(index + 1),
         published: Math.random() > 0.3, // 70% 機率發布
-        categories: {
-          create: [
-            { name: "Data Base" },
-            { name: "Big Data" }
-          ]
-        },
         likeNum: Math.floor(Math.random() * 100) + 1
       }))
     },
@@ -34,11 +35,6 @@ const userData: Prisma.UserCreateInput[] = [
       create: Array.from({ length: 45 }, (_, index) => ({
         title: generatePostTitle(index + 1),
         published: Math.random() > 0.3, // 70% 機率發布
-        categories: {
-          create: [
-            { name: "Data Base" }
-          ]
-        },
         likeNum: Math.floor(Math.random() * 100) + 1
       }))
     }
@@ -50,12 +46,6 @@ const userData: Prisma.UserCreateInput[] = [
       create: Array.from({ length: 35 }, (_, index) => ({
         title: generatePostTitle(index + 1),
         published: Math.random() > 0.3, // 70% 機率發布
-        categories: {
-          create: [ 
-            { name: "AI" },
-            { name: "Cloud" },
-          ]
-        },
         likeNum: Math.floor(Math.random() * 100) + 1
       }))
     }
@@ -65,20 +55,41 @@ const userData: Prisma.UserCreateInput[] = [
 async function main() {
   console.log(`Start seeding ...`);
   
-  // 清除現有數據（注意順序：先刪除有外鍵關係的表）
+  // 清除現有數據
   await prisma.post.deleteMany({});
   await prisma.category.deleteMany({});
   await prisma.user.deleteMany({});
 
-  // 再創建 users 和 posts
-  for (const u of userData) {
+  // 先創建 categories 並保存它們的 id
+  const createdCategories = await Promise.all(
+    categories.map(category => 
+      prisma.category.create({ data: category })
+    )
+  );
+
+  // 修改 userData 中的 categories connect
+  const modifiedUserData = userData.map(user => ({
+    ...user,
+    posts: {
+      create: ((user.posts as any).create as any[]).map(post => ({
+        ...post,
+        categories: {
+          connect: createdCategories
+            .sort(() => Math.random() - 0.5)  // 隨機打亂
+            .slice(0, Math.floor(Math.random() * 3) + 1)  // 隨機取1-3個
+            .map(cat => ({ id: cat.id }))  // 使用 id 連接
+        }
+      }))
+    }
+  }));
+
+  // 創建 users 和 posts
+  for (const u of modifiedUserData) {
     const user = await prisma.user.create({
       data: u,
     });
     console.log(`Created user with id: ${user.id}`);
   }
-  
-  console.log(`Seeding finished.`);
 }
 
 main()

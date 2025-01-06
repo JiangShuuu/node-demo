@@ -1,6 +1,6 @@
 import { Hono, Context } from "hono";
 import prisma from "../../lib/prisma";
-
+import CreateController from "./create";
 const users = new Hono()
 
 const getUsers = async (c: Context) => {
@@ -93,5 +93,7 @@ users.get('/', getUsers)
 users.get('/every', getUsersEvery)
 users.get('/some', getUsersSome)
 users.get('/none', getUsersNone)
+
+users.route('/create', CreateController)
 
 export default users
