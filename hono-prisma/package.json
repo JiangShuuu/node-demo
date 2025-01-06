@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "studio": "bunx prisma studio",
-    "migrate": "bunx prisma migrate dev --name"
+    "migrate": "bunx prisma migrate dev --name",
+    "db:push": "bunx prisma db push"
   },
   "dependencies": {
     "@prisma/client": "6.1.0",
