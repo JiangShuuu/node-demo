@@ -3,6 +3,8 @@ import prisma from "../../lib/prisma";
 import CreateController from "./create";
 import UpdateController from "./update";
 import UpsertController from "./upsert";
+import DeleteController from "./delete";
+
 const users = new Hono()
 
 const getUsers = async (c: Context) => {
@@ -99,5 +101,5 @@ users.get('/none', getUsersNone)
 users.route('/create', CreateController)
 users.route('/update', UpdateController)
 users.route('/upsert', UpsertController)
-
+users.route('/delete', DeleteController)
 export default users
