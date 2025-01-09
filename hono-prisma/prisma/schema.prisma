@@ -32,14 +32,17 @@ model User {
 
 model Post {
   id Int @id @default(autoincrement())
-  authorId Int
   title String
   createAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   published Boolean @default(false)
   likeNum Int @default(0)
-  
-  author User @relation(fields: [authorId], references: [id])
+  // 設定 onDelete: SetNull 表示當 User 被刪除時，文章的作者欄位會被設為 null，id, 關聯 User 需為可為 null 的欄位
+  // 設定 onDelete: Cascade 表示當 User 被刪除時，文章也會被刪除
+  // 設定 onDelete: Restrict 表示當 User 被刪除時，如果有關聯記錄存在，則阻止刪除
+  // 設定 onDelete: NoAction 表示當 User 被刪除時，不採取任何動作（可能導致外鍵約束錯誤）
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int
   categories Category[]
   tags PostTag[]
 }

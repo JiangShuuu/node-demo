@@ -1,6 +1,8 @@
 import { Hono, Context } from "hono";
 import prisma from "../../lib/prisma";
 import CreateController from "./create";
+import UpdateController from "./update";
+
 const users = new Hono()
 
 const getUsers = async (c: Context) => {
@@ -95,5 +97,6 @@ users.get('/some', getUsersSome)
 users.get('/none', getUsersNone)
 
 users.route('/create', CreateController)
+users.route('/update', UpdateController)
 
 export default users

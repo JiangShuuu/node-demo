@@ -32,8 +32,28 @@ const createUser = async (c: Context) => {
   })
 
   return c.json(user)
-} 
+}
+
+const createManyUsers = async (c: Context) => {
+  const users = await prisma.user.createMany({
+    data: [
+      {
+        email: 'john007@example.com',
+        name: 'John Doe 007',
+        role: 'USER',
+      },
+      {
+        email: 'john008@example.com',
+        name: 'John Doe 008',
+        role: 'USER',
+      }
+    ],
+    skipDuplicates: true // 跳過重複的資料，不會報錯，但也不會建立資料
+  })
+
+  return c.json(users)
+}
 
 create.post('/', createUser)
-
+create.post('/many', createManyUsers)
 export default create
