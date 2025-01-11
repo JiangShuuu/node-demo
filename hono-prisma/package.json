@@ -5,7 +5,8 @@
     "studio": "bunx prisma studio",
     "migrate": "bunx prisma migrate dev --name",
     "db:push": "bunx prisma db push",
-    "seed": "bun run prisma/seed.ts"
+    "db:seed": "bun run prisma/seed.ts",
+    "db:reset": "bunx prisma migrate reset"
   },
   "dependencies": {
     "@prisma/client": "6.1.0",
