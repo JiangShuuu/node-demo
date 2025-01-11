@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -16,10 +17,15 @@ const generatePostTitle = (index: number) => {
   return `${actions[Math.floor(Math.random() * actions.length)]} ${topic} #${index}`;
 };
 
+const hashPassword = async (password: string) => {
+  return await bcrypt.hash(password, 10);
+};
+
 const userData: Prisma.UserCreateInput[] = [
   {
     name: "John",
     email: "John@prisma.io",
+    password: '1234567890',
     posts: {
       create: Array.from({ length: 55 }, (_, index) => ({
         title: generatePostTitle(index + 1),
@@ -31,6 +37,7 @@ const userData: Prisma.UserCreateInput[] = [
   {
     name: "Jack",
     email: "jack@prisma.io",
+    password: '1234567890',
     posts: {
       create: Array.from({ length: 45 }, (_, index) => ({
         title: generatePostTitle(index + 1),
@@ -42,6 +49,7 @@ const userData: Prisma.UserCreateInput[] = [
   {
     name: "sara",
     email: "sara@prisma.io",
+    password: '1234567890',
     posts: {
       create: Array.from({ length: 35 }, (_, index) => ({
         title: generatePostTitle(index + 1),
@@ -86,7 +94,10 @@ async function main() {
   // 創建 users 和 posts
   for (const u of modifiedUserData) {
     const user = await prisma.user.create({
-      data: u,
+      data: {
+        ...u,
+        password: await hashPassword(u.password)
+      },
     });
     console.log(`Created user with id: ${user.id}`);
   }
