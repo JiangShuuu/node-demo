@@ -18,9 +18,9 @@ app.get('/posts', async (c) => {
 }).post('/posts', async (c) => {
   const db = drizzle(c.env.DB)
 
-  const { title, content } = await c.req.json()
+  const { title, content, author } = await c.req.json()
 
-  const result = await db.insert(posts).values({ title, content }).returning()
+  const result = await db.insert(posts).values({ title, content, author }).returning()
 
   return c.json(result)
 })

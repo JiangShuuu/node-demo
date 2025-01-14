@@ -8,6 +8,20 @@
       "when": 1736823173971,
       "tag": "0000_fancy_madripoor",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1736835252164,
+      "tag": "0001_open_arclight",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1736835442023,
+      "tag": "0002_same_zuras",
+      "breakpoints": true
     }
   ]
 }

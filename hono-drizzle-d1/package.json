@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "db:generate": "drizzle-kit generate",
-    "db:up": "drizzle-kit up:sqlite",
+    "db:up": "drizzle-kit up",
     "d1:local": "bunx wrangler d1 execute hono-drizzle-d1 --local --file",
     "d1:remote": "bunx wrangler d1 execute hono-drizzle-d1 --remote --file",
     "deploy": "wrangler deploy --minify"
