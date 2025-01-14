@@ -21,3 +21,7 @@ bunx wrangler d1 execute hono-drizzle-d1 --remote --file ./drizzle/migrations/00
 ```
 /Users/jiangshulu/Documents/frontend/node-demo/hono-drizzle-d1/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/257b8545e4218b5df41788e8d11c23faaa01fda99f6208556098f5c3e4fc2d59.sqlite
 ```
+
+## reference
+
+- https://www.youtube.com/watch?v=PxWleEgi3Hw
