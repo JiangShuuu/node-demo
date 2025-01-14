@@ -1,1 +1,0 @@
-ALTER TABLE `posts` ADD `author` text(256);

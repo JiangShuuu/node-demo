@@ -30,7 +30,7 @@ bun run d1:local
 bun run d1:remote
 ```
 
-db:up 是給其他資料庫使用的指令，d1 不需要
+drizzle-kit up 是給其他資料庫使用的指令，d1 不需要
 
 ## 修改程式碼後
 
