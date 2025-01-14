@@ -1,0 +1,31 @@
+name = "hono-drizzle-d1"
+main = "src/index.ts"
+compatibility_date = "2025-01-14"
+
+# compatibility_flags = [ "nodejs_compat" ]
+
+# [vars]
+# MY_VAR = "my-variable"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hono-drizzle-d1"
+database_id = "503123f0-520f-4d9d-9bd1-f82870226588"
+
+[vars]
+MY_VAR = "my-variablesss"
+
+# [ai]
+# binding = "AI"
+
+# [observability]
+# enabled = true
+# head_sampling_rate = 1

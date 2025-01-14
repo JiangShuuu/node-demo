@@ -1,0 +1,21 @@
+{
+  "name": "hono-drizzle-d1",
+  "scripts": {
+    "dev": "wrangler dev",
+    "db:generate": "drizzle-kit generate",
+    "db:up": "drizzle-kit up:sqlite",
+    "d1:local": "bunx wrangler d1 execute hono-drizzle-d1 --local --file",
+    "d1:remote": "bunx wrangler d1 execute hono-drizzle-d1 --remote --file",
+    "deploy": "wrangler deploy --minify"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "drizzle-orm": "^0.38.3",
+    "hono": "^4.6.16"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "drizzle-kit": "^0.30.1",
+    "wrangler": "^3.101.0"
+  }
+}
