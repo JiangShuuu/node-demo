@@ -2,6 +2,7 @@
   "name": "hono-drizzle-d1",
   "scripts": {
     "dev": "wrangler dev",
+    "dev:remote": "wrangler dev --remote",
     "db:generate": "drizzle-kit generate",
     "d1:local": "bunx wrangler d1 execute hono-drizzle-d1 --local --file",
     "d1:remote": "bunx wrangler d1 execute hono-drizzle-d1 --remote --file",
